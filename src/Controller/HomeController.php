@@ -1,10 +1,10 @@
 <?php
-/* User: nicolashalberstadt
-* Date: 17/02/2021
-* Time: 11:08
-*/
 
 namespace App\Controller;
+
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Routing\Annotation\Route;
 
 /**
  * Class HomeController
@@ -12,7 +12,15 @@ namespace App\Controller;
  * @author Nicolas Halberstadt <halberstadtnicolas@gmail.com>
  * @package App\Controller
  */
-class HomeController
+class HomeController extends AbstractController
 {
-    
+    /**
+     * @Route("/")
+     */
+    public function home(): Response
+    {
+        return $this->render('home.html.twig', [
+            'name' => 'Nicolas'
+        ]);
+    }
 }

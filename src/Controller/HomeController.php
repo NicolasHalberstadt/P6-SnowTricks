@@ -15,12 +15,13 @@ use Symfony\Component\Routing\Annotation\Route;
 class HomeController extends AbstractController
 {
     /**
-     * @Route("/")
+     * @Route("/", name="home")
      */
     public function home(): Response
     {
+        $user = $this->getUser();
         return $this->render('home.html.twig', [
-            'name' => 'Nicolas'
+            'user' => $user
         ]);
     }
 }

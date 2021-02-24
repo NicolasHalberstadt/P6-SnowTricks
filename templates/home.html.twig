@@ -1,13 +1,12 @@
 {% extends 'base.html.twig' %}
 {% block body %}
-    <h1>Welcome to the home page </h1>
-
     {% if user %}
-        <h2>You are logged in as {{ user.username }}</h2>
+        <h1>Welcome {{ user.username }}</h1>
+        <a href="/profile">Profile</a>
         <a href="/logout">Logout ?</a>
-        {% else %}
-            <h2>You are not logged in</h2>
-            <a href="/login">login</a>
-            <a href="/register">register</a>
+    {% else %}
+        <h1>Welcome to the home page </h1>
+        <a href="/login">login</a>
+        <a href="/register">register</a>
     {% endif %}
 {% endblock %}

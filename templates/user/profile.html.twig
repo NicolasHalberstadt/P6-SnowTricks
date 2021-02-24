@@ -1,0 +1,6 @@
+{% extends 'base.html.twig' %}
+{% block body %}
+    <h1>{{ user.username }}'s profile</h1>
+    <a href="profile/update">Update my profile</a>
+    <img style="width:15%;border-radius: 50%;" src="../uploads/avatar/{{ user.avatar }}" alt="">
+{% endblock %}

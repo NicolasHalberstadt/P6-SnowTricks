@@ -34,6 +34,7 @@ class User implements UserInterface
     
     /**
      * @ORM\Column(type="string", length=255)
+     * @Assert\Email(message = "The email '{{ value }}' is not a valid email.")
      */
     private $email;
     
@@ -160,12 +161,12 @@ class User implements UserInterface
         return $this;
     }
     
-    public function getRoles()
+    public function getRoles(): array
     {
-        return array();
+        return ['ROLE_USER'];
     }
     
-    public function getPassword()
+    public function getPassword(): ?string
     {
         return $this->password;
     }

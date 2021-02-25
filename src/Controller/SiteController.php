@@ -7,20 +7,21 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
 /**
- * Class HomeController
+ * Class SiteController
  *
  * @author Nicolas Halberstadt <halberstadtnicolas@gmail.com>
  * @package App\Controller
  */
-class HomeController extends AbstractController
+class SiteController extends AbstractController
 {
     /**
-     * @Route("/")
+     * @Route("/", name="home")
      */
     public function home(): Response
     {
+        $user = $this->getUser();
         return $this->render('home.html.twig', [
-            'name' => 'Nicolas'
+            'user' => $user
         ]);
     }
 }

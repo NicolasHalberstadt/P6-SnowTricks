@@ -1,0 +1,29 @@
+{% extends 'base.html.twig' %}
+{% block body %}
+    <div class="form" style="padding:2em;">
+        {{ form_start(form) }}
+        <div class="row">
+            <div class="col">
+                {{ form_row(form.firstname) }}
+            </div>
+            <div class="col">
+                {{ form_row(form.lastname) }}
+            </div>
+        </div>
+        {{ form_row(form.avatar) }}
+        {% if(avatar is not null) %}
+            <img style="width:15%;border-radius: 50%;" src="../uploads/avatar/{{ avatar }}" alt="">
+        {% else %}
+            <p>Null</p>
+        {% endif %}
+        {{ form_row(form.email) }}
+        {{ form_row(form.plainPassword) }}
+        <button type="button" onclick="history.back(-1)" class="btn btn-warning">Cancel</button>
+        <a onClick="return confirm('Delete your account?')"
+           class="btn btn-danger"
+           href="/profile/remove">
+            Remove my account</a>
+        <button type="submit" class="btn btn-success">Save</button>
+        {{ form_end(form) }}
+    </div>
+{% endblock %}

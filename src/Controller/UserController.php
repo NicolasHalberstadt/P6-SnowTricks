@@ -6,6 +6,7 @@ namespace App\Controller;
 use App\Form\UserUpdateType;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Filesystem\Filesystem;
+use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -93,7 +94,35 @@ class UserController extends AbstractController
             'avatar' => $avatar,
             'form' => $form->createView()
         ]);
+    }
+    
+    /**
+     * @Route("/profile/remove", name="user_profile_remove")
+     * @return RedirectResponse
+     */
+    public function removeUser(): RedirectResponse
+    {
+        $user = $this->getUser();
+        $avatar = $user->getAvatar();
+        if ($avatar) {
+            $avatarPath = $this->getParameter('avatar_directory') . '/' . $user->getAvatar();
+            $fs = new Filesystem();
+            $fs->remove($avatarPath);
+        }
+        // empty user's data
+        $user->setAvatar('');
+        $user->setFirstname('Removed');
+        $user->setLastname('User');
+        $user->setEmail('');
+        $user->setPassword('');
+        $user->setIsVerified(0);
+        $user->setUpdatedAt(new \DateTime());
+        $this->getDoctrine()->getManager()->flush();
+        // empty session to logout user
+         $this->get('session')->invalidate();
+        $this->get('security.token_storage')->setToken(null);
         
-        // TODO: Add delete user method
+        $this->addFlash('success', 'Your account has been deleted');
+        return $this->redirectToRoute('home');
     }
 }

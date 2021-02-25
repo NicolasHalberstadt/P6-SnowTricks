@@ -47,6 +47,9 @@ class RegistrationFormType extends AbstractType
                 'label' => 'Avatar',
                 'mapped' => false,
                 'required' => false,
+                'attr' => [
+                    'class'=> 'form-control'
+                ],
                 'constraints' => [
                     new File([
                         'maxSize' => '1024k',

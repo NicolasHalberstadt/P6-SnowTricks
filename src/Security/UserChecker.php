@@ -1,31 +1,30 @@
 <?php
 
-
 namespace App\Security;
 
-use Symfony\Component\Security\Core\Exception\AccountStatusException;
-use Symfony\Component\Security\Core\Exception\CustomUserMessageAuthenticationException;
+use App\Entity\User as AppUser;
+use Symfony\Component\Security\Core\Exception\CustomUserMessageAccountStatusException;
 use Symfony\Component\Security\Core\User\UserCheckerInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
 
-/**
- * Class UserChecker
- *
- * @author Nicolas Halberstadt <halberstadtnicolas@gmail.com>
- * @package App\Security
- */
 class UserChecker implements UserCheckerInterface
 {
-    
     public function checkPreAuth(UserInterface $user)
     {
+        if (!$user instanceof AppUser) {
+            return;
+        }
+        
         if (!$user->isVerified()) {
-            throw new CustomUserMessageAuthenticationException('You need to verify your email address first');
+            throw new CustomUserMessageAccountStatusException('Your account is not verified. Please, click in the link we sent you by mail. Don\'t forget to check your spam.');
         }
     }
     
     public function checkPostAuth(UserInterface $user)
     {
-        // TODO: Implement checkPostAuth() method.
+        if (!$user instanceof AppUser) {
+            return;
+        }
     }
 }
+

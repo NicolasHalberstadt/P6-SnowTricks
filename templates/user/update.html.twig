@@ -18,7 +18,11 @@
         {% endif %}
         {{ form_row(form.email) }}
         {{ form_row(form.plainPassword) }}
-
+        <button type="button" onclick="history.back(-1)" class="btn btn-warning">Cancel</button>
+        <a onClick="return confirm('Delete your account?')"
+           class="btn btn-danger"
+           href="/profile/remove">
+            Remove my account</a>
         <button type="submit" class="btn btn-success">Save</button>
         {{ form_end(form) }}
     </div>

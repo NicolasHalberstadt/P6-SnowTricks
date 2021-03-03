@@ -1,0 +1,31 @@
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+{% block javascripts %}
+    <script src="../../js/add-collection-widget.js"></script>
+    <div style="width:50%;margin:auto;">
+        {{ form_start(form) }}
+        {{ form_row(form.name) }}
+        {{ form_row(form.description) }}
+        {{ form_row(form.trickGroup) }}
+        {{ form_row(form.images) }}
+
+        <ul style="list-style: none;"
+            id="video-fields-list"
+            data-prototype="{{ form_widget(form.videos.vars.prototype)|e }}"
+            data-widget-tags="{{ '<li style="margin-bottom:0.5em"></li>'|e }}"
+            data-widget-counter="{{ form.videos|length }}">
+            {% for videoField in form.videos %}
+                <li>
+                    {{ form_errors(videoField) }}
+                    {{ form_widget(videoField) }}
+                </li>
+            {% endfor %}
+        </ul>
+        <button type="button"
+                class="add-another-collection-widget btn btn-warning"
+                data-list-selector="#video-fields-list">Add a video
+        </button>
+
+        <button type="submit" class="btn btn-success">Save</button>
+        {{ form_end(form) }}
+    </div>
+{% endblock %}

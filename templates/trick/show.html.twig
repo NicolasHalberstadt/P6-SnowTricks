@@ -1,0 +1,55 @@
+{% extends 'base.html.twig' %}
+{% block body %}
+    <div style="width:50%;margin:auto;">
+        <h1>{{ trick.name }}</h1>
+        <h2>{{ trick.trickGroup.name }}</h2>
+        <p>{{ trick.description }}</p>
+        <p>Written by {{ trick.user.username }} on {{ trick.createdAt | date('j M Y') }}</p>
+        <div class="images-container">
+            {% for image in trick.images %}
+                <img style="width:20%;" src="/uploads/tricks/{{ trick.slug }}/{{ image.name }}" alt="">
+            {% endfor %}
+        </div>
+        <div class="videos-container">
+            {% for video in trick.videos %}
+                {{ video.embed | raw }}
+            {% endfor %}
+        </div>
+        {% if app.user %}
+            <div class="">
+                <a class="btn btn-info" href="{{ path('trick_edit', {'slug': trick.slug }) }}">
+                    Edit trick
+                </a>
+            </div>
+        {% endif %}
+        <h3>Comments</h3>
+        {% if app.user %}
+            <div class="comments-form-container">
+                <div class="form-container">
+                    {{ form_start(commentForm) }}
+                    {{ form_row(commentForm.content) }}
+                    <button type="submit" class="btn btn-success">Leave a comment</button>
+                    {{ form_end(commentForm) }}
+                </div>
+            </div>
+        {% endif %}
+        <div class="comments-container">
+            {% for comment in comments %}
+                <div style="border:solid 1px black;padding:1em;margin:1em;display:flex" class="comment">
+                    {% if comment.user.avatar %}
+                        <img style="width:10%;border-radius:50%;"
+                             src="/uploads/avatar/{{ comment.user.avatar }}" alt="">
+                    {% endif %}
+                    <p>{{ comment.content }}</p>
+                    <p class="small-text">Written by {{ comment.user.username }}</p>
+                    {% if comment.user is same as app.user %}
+                        <a onclick="return confirm('Are you sure you want to delete your comment?');"
+                           href="{{ path('comment_delete', {'id':comment.id}) }}">
+                            <i class="fas fa-trash-alt"></i>
+                        </a>
+                    {% endif %}
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+{% endblock %}

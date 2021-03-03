@@ -37,3 +37,5 @@ security:
     - { path: '^/profile', role: IS_AUTHENTICATED_FULLY }
     - { path: '^/login', role: IS_ANONYMOUS }
     - { path: '^/register', role: IS_ANONYMOUS }
+    - { path: '^/video', role: IS_AUTHENTICATED_FULLY }
+    - { path: '^/image', role: IS_AUTHENTICATED_FULLY }

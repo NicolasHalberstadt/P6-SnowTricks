@@ -2,11 +2,27 @@
 {% block body %}
     {% if user %}
         <h1>Welcome {{ user.username }}</h1>
-        <a href="/profile">Profile</a>
-        <a href="/logout">Logout ?</a>
     {% else %}
         <h1>Welcome to the home page </h1>
-        <a href="/login">login</a>
-        <a href="/register">register</a>
     {% endif %}
+    <div style="display:flex;flex-direction:row;flex-wrap: wrap">
+        {% for trick in tricks %}
+            <div style="width:30%;padding:2em;border:solid black 1px;">
+                {% for image in trick.images %}
+                    {% if image is same as(trick.images|first) %}
+                        <img style="width:50%;" src="/uploads/tricks/{{ trick.slug }}/{{ image.name }}"
+                             alt="Picture for the trick {{ trick.name }}">
+                    {% endif %}
+                {% endfor %}
+                <h1><a href="{{ path('trick_show', {slug:  trick.slug}) }}">{{ trick.name }}</a></h1>
+                <h2>{{ trick.trickGroup.name }}</h2>
+                <p>{{ trick.description }}</p>
+                {% if user %}
+                    <a href="{{ path('trick_edit',{slug: trick.slug}) }}">
+                        <i class="fas fa-edit"></i>
+                    </a>
+                {% endif %}
+            </div>
+        {% endfor %}
+    </div>
 {% endblock %}

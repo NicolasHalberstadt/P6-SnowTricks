@@ -21,6 +21,10 @@
                     <a href="{{ path('trick_edit',{slug: trick.slug}) }}">
                         <i class="fas fa-edit"></i>
                     </a>
+                    <a onclick="return confirm('Are you sure you want to remove this trick ?');"
+                       href="{{ path('trick_delete',{slug: trick.slug}) }}">
+                        <i class="fas fa-trash"></i>
+                    </a>
                 {% endif %}
             </div>
         {% endfor %}

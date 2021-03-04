@@ -76,7 +76,7 @@ class RegistrationController extends AbstractController
             );
             $this->addFlash('success',
                 'Please, validate your email by clicking the link into the mail we just sent you');
-            return $this->redirectToRoute('app_login');
+            return $this->redirectToRoute('home');
         }
         return $this->render('registration/register.html.twig', [
             'registrationForm' => $form->createView()

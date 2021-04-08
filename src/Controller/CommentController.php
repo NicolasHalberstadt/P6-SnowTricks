@@ -8,13 +8,40 @@ use App\Entity\User;
 use App\Repository\CommentRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\RedirectResponse;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Serializer\SerializerInterface;
 
-/**
- * @Route("/comment")
- */
 class CommentController extends AbstractController
 {
+    /**
+     * @Route("/comments/get/{trickId}/{lastId}", name="comments_load_more")
+     * @param int $lastId
+     * @param int $trickId
+     * @param CommentRepository $commentRepository
+     * @param SerializerInterface $serializer
+     * @return Response
+     */
+    public function loadMoreComments(
+        int $lastId,
+        int $trickId,
+        CommentRepository $commentRepository,
+        SerializerInterface $serializer
+    ): Response {
+        $comments = $commentRepository->loadMoreComments($lastId, $trickId);
+        $response = new Response();
+        $response->setContent(
+            $serializer->serialize(
+                $comments,
+                'json',
+                ['groups' => ['comments']]
+            )
+        );
+        $response->headers->set('Content-Type', 'application/json');
+        
+        return $response;
+    }
+    
     public function add(Trick $trick, Comment $comment, User $user): RedirectResponse
     {
         $this->denyAccessUnlessGranted('ROLE_USER');
@@ -27,11 +54,12 @@ class CommentController extends AbstractController
         $em->persist($comment);
         $em->flush();
         $this->addFlash('success', 'The comment has been successfully published');
+        
         return $this->redirectToRoute('trick_show', ['slug' => $trick->getSlug()]);
     }
     
     /**
-     * @Route("/{id}/remove", name="comment_delete")
+     * @Route("/comment/{id}/remove", name="comment_delete")
      * @param int $id
      * @param CommentRepository $commentRepository
      * @return RedirectResponse
@@ -47,8 +75,12 @@ class CommentController extends AbstractController
         $em->remove($comment);
         $em->flush();
         $this->addFlash('success', 'The comment has been successfully removed.');
-        return $this->redirectToRoute('trick_show', [
-            'slug' => $trickSlug
-        ]);
+        
+        return $this->redirectToRoute(
+            'trick_show',
+            [
+                'slug' => $trickSlug,
+            ]
+        );
     }
 }

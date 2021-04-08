@@ -18,33 +18,37 @@ class CommentRepository extends ServiceEntityRepository
     {
         parent::__construct($registry, Comment::class);
     }
-
-    // /**
-    //  * @return Comment[] Returns an array of Comment objects
-    //  */
-    /*
-    public function findByExampleField($value)
+    
+    /**
+     * @param int $trickId
+     * @return array
+     */
+    public function getComments(int $trickId): array
     {
         return $this->createQueryBuilder('c')
-            ->andWhere('c.exampleField = :val')
-            ->setParameter('val', $value)
-            ->orderBy('c.id', 'ASC')
-            ->setMaxResults(10)
+            ->orderBy('c.id', 'DESC')
+            ->andWhere('c.trick = :trickId')
+            ->setParameter('trickId', $trickId)
+            ->setMaxResults(3)
             ->getQuery()
-            ->getResult()
-        ;
+            ->getResult();
     }
-    */
-
-    /*
-    public function findOneBySomeField($value): ?Comment
+    
+    /**
+     * @param int $lastId
+     * @param int $trickId
+     * @return array
+     */
+    public function loadMoreComments(int $lastId, int $trickId): array
     {
         return $this->createQueryBuilder('c')
-            ->andWhere('c.exampleField = :val')
-            ->setParameter('val', $value)
+            ->andWhere('c.id < :lastId')
+            ->andWhere('c.trick = :trickId')
+            ->setParameter('lastId', $lastId)
+            ->setParameter('trickId', $trickId)
+            ->orderBy('c.id', 'DESC')
+            ->setMaxResults(3)
             ->getQuery()
-            ->getOneOrNullResult()
-        ;
+            ->getResult();
     }
-    */
 }

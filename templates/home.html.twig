@@ -1,32 +1,136 @@
 {% extends 'base.html.twig' %}
+{% block title %}Home{% endblock %}
+{% block banner %}
+    <div class="text-center home-banner" id="page-top">
+        <h3 class="home-banner-text">Snow Tricks</h3>
+    </div>
+{% endblock %}
 {% block body %}
-    {% if user %}
-        <h1>Welcome {{ user.username }}</h1>
-    {% else %}
-        <h1>Welcome to the home page </h1>
-    {% endif %}
-    <div style="display:flex;flex-direction:row;flex-wrap: wrap">
-        {% for trick in tricks %}
-            <div style="width:30%;padding:2em;border:solid black 1px;">
-                {% for image in trick.images %}
-                    {% if image is same as(trick.images|first) %}
-                        <img style="width:50%;" src="/uploads/tricks/{{ trick.slug }}/{{ image.name }}"
-                             alt="Picture for the trick {{ trick.name }}">
-                    {% endif %}
-                {% endfor %}
-                <h1><a href="{{ path('trick_show', {slug:  trick.slug}) }}">{{ trick.name }}</a></h1>
-                <h2>{{ trick.trickGroup.name }}</h2>
-                <p>{{ trick.description }}</p>
-                {% if user %}
-                    <a href="{{ path('trick_edit',{slug: trick.slug}) }}">
-                        <i class="fas fa-edit"></i>
-                    </a>
-                    <a onclick="return confirm('Are you sure you want to remove this trick ?');"
-                       href="{{ path('trick_delete',{slug: trick.slug}) }}">
-                        <i class="fas fa-trash"></i>
-                    </a>
+    <a href="#tricks-container">
+        <button id="tricksBtn">
+            <i class="fas fa-arrow-down"></i>
+        </button>
+    </a>
+    <div class="row row-cols-1 row-cols-md-5 g-4" id="tricks-container"
+         data-is-authenticated="{{ app.user ? 'true' : 'false' }}">
+        {% if tricks is empty %}
+            <h3>No trick yet.
+                {% if app.user %}
+                    <a href="{{ path('trick_add') }}">Add one ? </a>
                 {% endif %}
+            </h3>
+        {% endif %}
+        {% for trick in tricks %}
+            <div class="col">
+                <div class="card">
+                    {% if trick.images is empty %}
+                        <div class="card-img-container">
+                            <img src="/uploads/tricks/common-image.jpg" class="card-img-top"
+                                 alt="Picture for the trick {{ trick.name }}">
+                        </div>
+                    {% endif %}
+                    {% for image in trick.images %}
+                        {% if image.isMain is same as(true) %}
+                            <div class="card-img-container">
+                                <img src="/uploads/tricks/{{ trick.slug }}/{{ image.name }}" class="card-img-top"
+                                     alt="Picture for the trick {{ trick.name }}">
+                            </div>
+                        {% endif %}
+                    {% endfor %}
+                    <div class="card-body">
+                        <h5 class="card-title">
+                            <a href="{{ path('trick_show', {slug: trick.slug}) }}">{{ trick.name }}</a>
+                        </h5>
+                        {% if user %}
+                            <div>
+                                <a href="{{ path('trick_edit', {slug : trick.slug}) }}">
+                                    <i class="fas fa-pen"></i>
+                                </a>
+                                <a onclick="return confirm('Are you sure you want to remove this trick ?');"
+                                   href="{{ path('trick_delete', {slug: trick.slug}) }} ">
+                                    <i class="far fa-trash-alt"></i>
+                                </a>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
             </div>
         {% endfor %}
     </div>
+    {% if tricks|length is same as(15) %}
+        <button type="button" id="loader-btn" class="loader-btn btn btn-secondary">
+            <i class="fas fa-spinner fa-spin"></i> Load more
+        </button>
+    {% endif %}
+    <a href="#page-top">
+        <button id="topBtn" title="Go to top">
+            <i class="fas fa-arrow-up"></i>
+        </button>
+    </a>
 {% endblock %}
+
+{% block javascripts %}
+    <script src="{{ asset("/js/page-move-btn.js") }}" crossorigin="anonymous"></script>
+    <script>
+        jQuery().ready(function () {
+            let moreBtn = $('#loader-btn');
+            moreBtn.on('click', function () {
+                $.ajax({
+                    type: "GET",
+                    url: "{{ path('tricks_load_more', {lastId: tricks|last.id}) }}",
+                    cache: false,
+                    success: function (tricks) {
+                        let tricksContainer = $('#tricks-container');
+
+                        let isAuthenticated = tricksContainer.data('isAuthenticated');
+                        $.each(tricks, function (i, trick) {
+                            let card = '<div class="col"><div id="card_' + trick['slug'] + '" class="card"></div></div>';                           // creating card block
+                            tricksContainer.append(card); // adding card to tricks
+                            if (trick['images'].length > 0) {
+                                $.each(trick['images'], function (i, image) {
+                                    if (image['isMain']) {
+                                        let imgContainer = '<div id="img_' + trick['slug'] + '" class="card-img-container"></div>' // creating img container
+                                        let img = '<img src="/uploads/tricks/'
+                                            + trick['slug'] + '/' + image['name'] +
+                                            '" class="card-img-top" alt="Picture for the trick ' + trick['name'] + '">';
+                                        $('#card_' + trick['slug'] + '').append(imgContainer);
+                                        $('#img_' + trick['slug'] + '').append(img);
+                                    }
+                                })
+                            } else {
+                                let img = '<div class="card-img-container">' +
+                                    '<img src="/uploads/tricks/common-image.jpg" class="card-img-top" alt="Picture for the trick'
+                                    + trick['name'] + '">' +
+                                    '</div>'
+                                let imgContainer = '<div id="img_' + trick['slug'] + '" class="card-img-container"></div>';
+                                $('#card_' + trick['slug'] + '').append(imgContainer);
+                                $('#img_' + trick['slug'] + '').append(img);
+                            }
+                            let cardBody = '<div class="card-body" id="card-body-' + trick['slug'] + '"><h5 class="card-title"><a href="/trick/' + trick['slug'] + '">' + trick['name'] + '</a></h5>';
+                            $('#card_' + trick['slug'] + '').append(cardBody);
+                            if (isAuthenticated) {
+                                let edit = '<div><a href="trick/' + trick['slug'] + '/edit/"><i class="fas fa-pen"></i></a><a onclick="return confirm(\'Are you sure you want to remove this trick ?\');" href="/trick/' + trick['slug'] + '/delete"><i class="far fa-trash-alt"></i></a></div>';
+                                $("#card-body-" + trick['slug'] + "").append(edit);
+                            }
+                        })
+                        $('#loader-btn').remove();
+                    }
+                })
+            });
+        });
+
+        $('a[href*="#"]').not('[href="#"]').not('[href="#0"]').click(function (t) {
+            if (location.pathname.replace(/^\//, "") === this.pathname.replace(/^\//, "") && location.hostname === this.hostname) {
+                let e = $(this.hash);
+                e = e.length ? e : $("[name=" + this.hash.slice(1) + "]"), e.length && (t.preventDefault(), $("html, body").animate({
+                    scrollTop: e.offset().top
+                }, 600, function () {
+                    var t = $(e);
+                    if (t.focus(), t.is(":focus")) return !1;
+                }))
+            }
+        });
+    </script>
+{% endblock %}
+
+

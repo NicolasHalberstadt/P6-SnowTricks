@@ -43,27 +43,30 @@ class TrickFormType extends AbstractType
                 ]
             ])
             ->add('images', FileType::class, [
-                'label' => 'Add some images',
+                'label' => false,
                 'multiple' => true,
                 'mapped' => false,
                 'required' => false,
-                'attr' => [
-                    'class' => 'form-control'
+                'label_attr' => [
+                    'class' => 'images-label'
                 ],
-            ])
-            ->add('videos', CollectionType::class, [
-                'entry_type' => VideoType::class,
-                'label' => 'Add a video',
-                'mapped' => false,
-                'required' => false,
-                'prototype' => true,
-                'allow_add' => true,
+                'attr' => [
+                    'class' => 'form-control images-input'
+                ],
             ])
             ->add('trickGroup', EntityType::class, [
                 'label' => 'Group',
                 'class' => TrickGroup::class,
                 'choice_label' => 'name',
                 'required' => true,
+            ])
+            ->add('videos', CollectionType::class, [
+                'entry_type' => VideoType::class,
+                'label' => false,
+                'mapped' => false,
+                'required' => false,
+                'prototype' => true,
+                'allow_add' => true,
             ]);
     }
     

@@ -5,6 +5,7 @@ namespace App\Entity;
 use App\Repository\UserRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
+use Symfony\Component\Serializer\Annotation\Groups;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Security\Core\User\UserInterface;
@@ -21,27 +22,33 @@ class User implements UserInterface
      * @ORM\Id
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
+     * @Groups({"trick, comments"})
      */
     private $id;
     
     /**
      * @ORM\Column(type="string", length=255)
+     * @Groups({"trick"})
      */
     private $firstname;
     
     /**
      * @ORM\Column(type="string", length=255)
+     * @Groups({"trick"})
      */
     private $lastname;
     
     /**
      * @ORM\Column(type="string", length=255)
      * @Assert\Email(message = "The email '{{ value }}' is not a valid email.")
+     * @Groups({"trick"})
+     * @Groups({"comments"})
      */
     private $email;
     
     /**
      * @ORM\Column(type="string", length=255, nullable=true)
+     * @Groups({"comments"})
      */
     private $avatar;
     
@@ -66,12 +73,12 @@ class User implements UserInterface
      * @ORM\Column(type="boolean")
      */
     private $isVerified = false;
-
+    
     /**
      * @ORM\OneToMany(targetEntity=Comment::class, mappedBy="user", orphanRemoval=true)
      */
     private $comments;
-
+    
     public function __construct()
     {
         $this->comments = new ArrayCollection();
@@ -109,7 +116,7 @@ class User implements UserInterface
     /**
      * @return string
      */
-    public function getPlainPassword(): string
+    public function getPlainPassword(): ?string
     {
         return $this->plainPassword;
     }
@@ -190,7 +197,7 @@ class User implements UserInterface
     
     public function getUsername(): string
     {
-        return $this->getFirstname() . " " . $this->getLastname();
+        return $this->getFirstname()." ".$this->getLastname();
     }
     
     public function eraseCredentials()
@@ -216,7 +223,7 @@ class User implements UserInterface
         
         return $this;
     }
-
+    
     /**
      * @return Collection|Comment[]
      */
@@ -224,17 +231,17 @@ class User implements UserInterface
     {
         return $this->comments;
     }
-
+    
     public function addComment(Comment $comment): self
     {
         if (!$this->comments->contains($comment)) {
             $this->comments[] = $comment;
             $comment->setUser($this);
         }
-
+        
         return $this;
     }
-
+    
     public function removeComment(Comment $comment): self
     {
         if ($this->comments->removeElement($comment)) {
@@ -243,7 +250,7 @@ class User implements UserInterface
                 $comment->setUser(null);
             }
         }
-
+        
         return $this;
     }
 }

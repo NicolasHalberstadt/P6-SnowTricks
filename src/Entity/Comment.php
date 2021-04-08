@@ -2,60 +2,60 @@
 
 namespace App\Entity;
 
-use App\Repository\ImageRepository;
+use App\Repository\CommentRepository;
 use Symfony\Component\Serializer\Annotation\Groups;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
- * @ORM\Entity(repositoryClass=ImageRepository::class)
+ * @ORM\Entity(repositoryClass=CommentRepository::class)
  */
-class Image
+class Comment
 {
     /**
      * @ORM\Id
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
-     * @Groups({"trick"})
+     * @Groups({"comments"})
      */
     private $id;
     
     /**
-     * @ORM\Column(type="string", length=255)
-     * @Groups({"trick"})
+     * @ORM\Column(type="string", length=1020)
+     * @Groups({"comments"})
      */
-    private $name;
+    private $content;
     
     /**
      * @ORM\Column(type="datetime")
-     * @Groups({"trick"})
      */
     private $createdAt;
     
     /**
-     * @ORM\ManyToOne(targetEntity=Trick::class, inversedBy="images")
+     * @ORM\ManyToOne(targetEntity=User::class, inversedBy="comments")
+     * @ORM\JoinColumn(nullable=false)
+     * @Groups({"comments"})
+     */
+    private $user;
+    
+    /**
+     * @ORM\ManyToOne(targetEntity=Trick::class, inversedBy="comments")
      * @ORM\JoinColumn(nullable=false)
      */
     private $trick;
-    
-    /**
-     * @ORM\Column(type="boolean")
-     * @Groups({"trick"})
-     */
-    private $isMain = false;
     
     public function getId(): ?int
     {
         return $this->id;
     }
     
-    public function getName(): ?string
+    public function getContent(): ?string
     {
-        return $this->name;
+        return $this->content;
     }
     
-    public function setName(string $name): self
+    public function setContent(string $content): self
     {
-        $this->name = $name;
+        $this->content = $content;
         
         return $this;
     }
@@ -72,6 +72,18 @@ class Image
         return $this;
     }
     
+    public function getUser(): ?User
+    {
+        return $this->user;
+    }
+    
+    public function setUser(?User $user): self
+    {
+        $this->user = $user;
+        
+        return $this;
+    }
+    
     public function getTrick(): ?Trick
     {
         return $this->trick;
@@ -80,18 +92,6 @@ class Image
     public function setTrick(?Trick $trick): self
     {
         $this->trick = $trick;
-        
-        return $this;
-    }
-    
-    public function getIsMain(): ?bool
-    {
-        return $this->isMain;
-    }
-    
-    public function setIsMain(bool $isMain): self
-    {
-        $this->isMain = $isMain;
         
         return $this;
     }

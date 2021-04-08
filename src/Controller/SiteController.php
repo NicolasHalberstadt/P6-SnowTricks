@@ -23,7 +23,7 @@ class SiteController extends AbstractController
     public function home(TrickRepository $trickRepository): Response
     {
         $user = $this->getUser();
-        $tricks = $trickRepository->findAll();
+        $tricks = $trickRepository->findHomepageTricks();
         return $this->render('home.html.twig', [
             'user' => $user,
             'tricks' => $tricks

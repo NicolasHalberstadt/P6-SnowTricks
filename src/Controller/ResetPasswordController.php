@@ -5,6 +5,7 @@ namespace App\Controller;
 use App\Entity\User;
 use App\Form\ChangePasswordFormType;
 use App\Form\ResetPasswordRequestFormType;
+use App\Repository\TrickRepository;
 use Symfony\Bridge\Twig\Mime\TemplatedEmail;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\RedirectResponse;
@@ -61,20 +62,23 @@ class ResetPasswordController extends AbstractController
      * Confirmation page after a user has requested a password reset.
      *
      * @Route("/check-email", name="app_check_email")
+     * @param TrickRepository $trickRepo
+     * @return Response
      */
-    public function checkEmail(): Response
+    public function checkEmail(TrickRepository $trickRepo): Response
     {
         // We prevent users from directly accessing this page
         if (null === ($resetToken = $this->getTokenObjectFromSession())) {
             return $this->redirectToRoute('app_forgot_password_request');
         }
         $resetToken->getExpirationMessageKey();
-        
+        $tricks = $trickRepo->findAll();
         $this->addFlash('success',
             'An email has been sent that contains a link that you can click to reset your password. This link will expire in 1 hour.');
         return $this->render('home.html.twig', [
             'resetToken' => $resetToken,
-            'user' => null
+            'user' => $this->getUser(),
+            'tricks' => $tricks
         ]);
     }
     

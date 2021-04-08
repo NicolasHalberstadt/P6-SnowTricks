@@ -1,6 +1,10 @@
 {% extends 'base.html.twig' %}
+{% block title %}Profile{% endblock %}
 {% block body %}
-    <h1>{{ user.username }}'s profile</h1>
-    <a href="profile/update">Update my profile</a>
-    <img style="width:15%;border-radius: 50%;" src="../uploads/avatar/{{ user.avatar }}" alt="">
+    <div class="user-card">
+        <img class="user-card-avatar" src="{{ asset('uploads/avatar/'~ user.avatar) }}" alt="">
+        <h1 class="user-card-name">Welcome {{ user.username }}</h1>
+        <p>Member of SnowTricks since {{ user.createdAt|date("jS F Y") }}.</p>
+        <a class="btn btn-outline-dark" href="profile/update">Update my profile</a>
+    </div>
 {% endblock %}

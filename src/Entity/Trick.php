@@ -5,6 +5,7 @@ namespace App\Entity;
 use App\Repository\TrickRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
+use Symfony\Component\Serializer\Annotation\Groups;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 
@@ -18,32 +19,38 @@ class Trick
      * @ORM\Id
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
+     * @Groups({"trick"})
      */
     private $id;
     
     /**
      * @ORM\Column(type="string", length=255)
+     * @Groups({"trick"})
      */
     private $name;
     
     /**
      * @ORM\Column(type="string", unique=true)
+     * @Groups({"trick"})
      */
     private $slug;
     
     /**
      * @ORM\Column(type="string", length=1020)
+     * @Groups({"trick"})
      */
     private $description;
     
     /**
      * @ORM\ManyToOne(targetEntity=User::class)
      * @ORM\JoinColumn(nullable=false)
+     * @Groups({"trick"})
      */
     private $user;
     
     /**
      * @ORM\Column(type="datetime")
+     * @Groups({"trick"})
      */
     private $createdAt;
     
@@ -54,6 +61,7 @@ class Trick
     
     /**
      * @ORM\OneToMany(targetEntity=Image::class, mappedBy="trick", orphanRemoval=true)
+     * @Groups({"trick"})
      */
     private $images;
     
@@ -67,7 +75,7 @@ class Trick
      * @ORM\JoinColumn(nullable=false)
      */
     private $trickGroup;
-
+    
     /**
      * @ORM\OneToMany(targetEntity=Comment::class, mappedBy="trick", orphanRemoval=true)
      */
@@ -232,7 +240,7 @@ class Trick
         
         return $this;
     }
-
+    
     /**
      * @return Collection|Comment[]
      */
@@ -240,17 +248,17 @@ class Trick
     {
         return $this->comments;
     }
-
+    
     public function addComment(Comment $comment): self
     {
         if (!$this->comments->contains($comment)) {
             $this->comments[] = $comment;
             $comment->setTrick($this);
         }
-
+        
         return $this;
     }
-
+    
     public function removeComment(Comment $comment): self
     {
         if ($this->comments->removeElement($comment)) {
@@ -259,7 +267,7 @@ class Trick
                 $comment->setTrick(null);
             }
         }
-
+        
         return $this;
     }
 }

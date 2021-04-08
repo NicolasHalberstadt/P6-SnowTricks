@@ -38,6 +38,11 @@ class Video
      */
     private $trick;
 
+    /**
+     * @ORM\Column(type="string", length=255)
+     */
+    private $youtubeId;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -87,6 +92,18 @@ class Video
     public function setTrick(?Trick $trick): self
     {
         $this->trick = $trick;
+
+        return $this;
+    }
+
+    public function getYoutubeId(): ?string
+    {
+        return $this->youtubeId;
+    }
+
+    public function setYoutubeId(string $youtubeId): self
+    {
+        $this->youtubeId = $youtubeId;
 
         return $this;
     }

@@ -18,33 +18,37 @@ class ImageRepository extends ServiceEntityRepository
     {
         parent::__construct($registry, Image::class);
     }
-
-    // /**
-    //  * @return Image[] Returns an array of Image objects
-    //  */
-    /*
-    public function findByExampleField($value)
+    
+    /**
+     * @param string $name
+     * @param int $trickId
+     * @return Image[] Returns an array of Image objects
+     */
+    public function findOneByName(string $name, int $trickId): array
     {
-        return $this->createQueryBuilder('i')
-            ->andWhere('i.exampleField = :val')
-            ->setParameter('val', $value)
-            ->orderBy('i.id', 'ASC')
-            ->setMaxResults(10)
-            ->getQuery()
-            ->getResult()
-        ;
+        $qb = $this->createQueryBuilder('i')
+            ->where('i.name LIKE :name')
+            ->andWhere('i.trick = :trick_id')
+            ->setParameters([
+                'name' => '%' . $name . '%',
+                'trick_id' => $trickId
+            ]);
+        $query = $qb->getQuery();
+        return $query->execute();
     }
-    */
-
-    /*
-    public function findOneBySomeField($value): ?Image
+    
+    
+    /**
+     * @param int $trickId
+     * @return Image[] Returns an array of Image objects
+     */
+    public function findMainPic(int $trickId): array
     {
-        return $this->createQueryBuilder('i')
-            ->andWhere('i.exampleField = :val')
-            ->setParameter('val', $value)
-            ->getQuery()
-            ->getOneOrNullResult()
-        ;
+        $qb = $this->createQueryBuilder('i')
+            ->where('i.trick = :trick_id')
+            ->andWhere('i.isMain = true')
+            ->setParameter('trick_id', $trickId);
+        $query = $qb->getQuery();
+        return $query->execute();
     }
-    */
 }

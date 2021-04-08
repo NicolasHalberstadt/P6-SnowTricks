@@ -1,55 +1,205 @@
 {% extends 'base.html.twig' %}
+{% block title %}{{trick.name}}{% endblock %}
 {% block body %}
-    <div style="width:50%;margin:auto;">
-        <h1>{{ trick.name }}</h1>
-        <h2>{{ trick.trickGroup.name }}</h2>
-        <p>{{ trick.description }}</p>
-        <p>Written by {{ trick.user.username }} on {{ trick.createdAt | date('j M Y') }}</p>
-        <div class="images-container">
-            {% for image in trick.images %}
-                <img style="width:20%;" src="/uploads/tricks/{{ trick.slug }}/{{ image.name }}" alt="">
-            {% endfor %}
-        </div>
-        <div class="videos-container">
-            {% for video in trick.videos %}
-                {{ video.embed | raw }}
-            {% endfor %}
-        </div>
-        {% if app.user %}
-            <div class="">
-                <a class="btn btn-info" href="{{ path('trick_edit', {'slug': trick.slug }) }}">
-                    Edit trick
-                </a>
-            </div>
-        {% endif %}
-        <h3>Comments</h3>
-        {% if app.user %}
-            <div class="comments-form-container">
-                <div class="form-container">
-                    {{ form_start(commentForm) }}
-                    {{ form_row(commentForm.content) }}
-                    <button type="submit" class="btn btn-success">Leave a comment</button>
-                    {{ form_end(commentForm) }}
+    <div class="trick-container" data-user-email="{{ app.user ? app.user.email|json_encode|e('html_attr') }}">
+        <div class="row">
+            <div id="carouselExampleIndicators" class="carousel slide" data-bs-ride="carousel">
+                <div class="carousel-inner">
+                    {% if app.user %}
+                        <div class="trick-edit-buttons">
+                            <a href="{{ path('trick_edit', {slug : trick.slug}) }}">
+                                <i class="fas fa-pen"></i>
+                            </a>
+                            <a onclick="return confirm('Are you sure you want to remove this trick ?');"
+                               href="{{ path('trick_delete', {slug: trick.slug}) }} ">
+                                <i class="far fa-trash-alt"></i>
+                            </a>
+                        </div>
+                    {% endif %}
+                    <p class="trick-name badge" id="trick-name">{{ trick.name }}</p>
+                    {% if trick.images is empty %}
+                        <div class="carousel-item active">
+                            <img src="/uploads/tricks/common-image.jpg" class="d-block w-100"
+                                 alt="snowboarder jumping">
+                        </div>
+                    {% endif %}
+                    {% for image in trick.images %}
+                        <div class="carousel-item  {% if image.isMain %}active{% endif %}">
+                            <img src="/uploads/tricks/{{ trick.slug }}/{{ image.name }}" class="d-block {# w-100 #}"
+                                 alt="...">
+                        </div>
+                    {% endfor %}
+                    {% for video in trick.videos %}
+                        <div class="carousel-item carousel-video">
+                            <div class="video">
+                                {{ video.embed|raw }}
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+                <div class="carousel-indicators">
+                    {% set i = 0 %}
+                    {% if trick.images is empty %}
+                        <img src="/uploads/tricks/common-image.jpg"
+                             alt="snowboarder jumping"
+                             data-bs-target="#carouselExampleIndicators"
+                             data-bs-slide-to="{{ i }}"
+                             class="active"
+                             aria-current="true"
+                             aria-label="Slide {{ i }}">
+                        {% set i = i +1 %}
+                    {% endif %}
+                    {% for image in trick.images %}
+                        <img src="/uploads/tricks/{{ trick.slug }}/{{ image.name }}"
+                             alt=""
+                             data-bs-target="#carouselExampleIndicators"
+                             data-bs-slide-to="{{ i }}"
+                             {% if image.isMain %}class="active"{% endif %} aria-current="true"
+                             aria-label="Slide {{ i }}">
+                        {% set i = i+1 %}
+                    {% endfor %}
+                    {% for video in trick.videos %}
+                        <img src="https://img.youtube.com/vi/{{ video.youtubeId }}/default.jpg"
+                             alt=""
+                             data-bs-target="#carouselExampleIndicators"
+                             data-bs-slide-to="{{ i }}"
+                             aria-current="true"
+                             aria-label="Slide {{ i }}">
+                        {% set i = i+1 %}
+                    {% endfor %}
                 </div>
             </div>
-        {% endif %}
+        </div>
+        <div class="trick-content">
+            <p>{{ trick.description|capitalize }}</p>
+            <div class="trick-info">
+                <p class="badge bg-light text-dark">Created
+                    the {{ trick.createdAt|date("dS F Y", "Europe/Paris") }}</p>
+                <p class="badge bg-light text-dark">Group : {{ trick.trickGroup.name }}</p>
+                {% if trick.updatedAt is defined %}
+                    <p class="badge bg-light text-dark">Updated
+                        the {{ trick.updatedAt|date("dS F Y", "Europe/Paris") }}</p>
+                {% endif %}
+            </div>
+        </div>
+
         <div class="comments-container">
+            <hr>
+            {% if app.user %}
+                <div class="comments-form-container">
+                    <div class="form-container">
+                        {{ form_start(commentForm) }}
+                        {{ form_row(commentForm.content) }}
+                        <button type="submit" class="btn btn-light" id="comment-button">Leave a comment</button>
+                        {{ form_end(commentForm) }}
+                    </div>
+                </div>
+            {% else %}
+                <h4 class="comment-login">You have to be
+                    <a class="comment-login-link" href="{{ path('app_login') }}">logged in</a>
+                    to post a comment</h4>
+            {% endif %}
+            <hr>
+            {% if comments is empty %}
+                <div class="no-comment">
+                    <h4>No comments yet</h4>
+                </div>
+            {% endif %}
             {% for comment in comments %}
-                <div style="border:solid 1px black;padding:1em;margin:1em;display:flex" class="comment">
-                    {% if comment.user.avatar %}
-                        <img style="width:10%;border-radius:50%;"
-                             src="/uploads/avatar/{{ comment.user.avatar }}" alt="">
-                    {% endif %}
-                    <p>{{ comment.content }}</p>
-                    <p class="small-text">Written by {{ comment.user.username }}</p>
-                    {% if comment.user is same as app.user %}
-                        <a onclick="return confirm('Are you sure you want to delete your comment?');"
-                           href="{{ path('comment_delete', {'id':comment.id}) }}">
-                            <i class="fas fa-trash-alt"></i>
-                        </a>
-                    {% endif %}
+                <div class="comment">
+                    <div class="comment-avatar">
+                        {% if comment.user.avatar %}
+                            <img src="/uploads/avatar/{{ comment.user.avatar }}" alt="">
+                        {% else %}
+                            <img src="/uploads/avatar/common-avatar.png" alt="">
+                        {% endif %}
+                    </div>
+                    <div class="comment-content">
+                        <p>{{ comment.content }}</p>
+                        {% if comment.user is same as app.user %}
+                            <a onclick="return confirm('Are you sure you want to delete your comment?');"
+                               href="{{ path('comment_delete', {'id':comment.id}) }}">
+                                <i class="fas fa-trash-alt"></i>
+                            </a>
+                        {% endif %}
+                    </div>
                 </div>
             {% endfor %}
+            {% if comments|length is same as(3) %}
+                <button type="button" id="loader-btn" class="loader-btn btn btn-secondary">
+                    <i class="fas fa-spinner fa-spin"></i> Load more
+                </button>
+            {% endif %}
         </div>
     </div>
+{% endblock %}
+{% block javascripts %}
+    {# trick name display management #}
+    <script>
+        let carousel = document.getElementById('carouselExampleIndicators');
+        let trickName = document.getElementById('trick-name');
+        carousel.addEventListener('slid.bs.carousel', function (e) {
+            let slides = e.target.querySelectorAll('.carousel-item');
+            let currentSlide = '';
+            slides.forEach(function (slide) {
+                if (slide.classList.contains('active')) {
+                    currentSlide = slide;
+                }
+            })
+            if (currentSlide.classList.contains('carousel-video')) {
+                if (trickName.classList.contains('block')) {
+                    trickName.classList.remove('block');
+                }
+                trickName.classList.add('d-none');
+            } else {
+                if (trickName.classList.contains('d-none')) {
+                    trickName.classList.remove('d-none');
+                }
+                trickName.classList.add('block');
+            }
+        });
+    </script>
+    {# ajax call load more comments #}
+    <script>
+        jQuery().ready(function () {
+            let moreBtn = $('#loader-btn');
+            let trickContainer = $('.trick-container');
+            let lastId = $('.comments-container:last-child').attr("id");
+            moreBtn.on('click', function () {
+                $.ajax({
+                    type: "GET",
+                    url: "{{ path('comments_load_more', {lastId: comments|last.id, trickId: trick.id }) }}",
+                    cache: false,
+                    success: function (comments) {
+                        let currentUserEmail = trickContainer.data('userEmail');
+                        $.each(comments, function (i, comment) {
+                            /* Block for each comment */
+                            let commentBlock = '<div class="comment" id="comment-block-' + i + '"></div>';
+                            moreBtn.before(commentBlock);
+                            /* If user connected => avatar displayed */
+                            if (comment['user']['avatar']) {
+                                $("#comment-block-" + i + "").append('<div class="comment-avatar" id="comment-avatar-' + i + '"><img src="/uploads/avatar/' + comment['user']['avatar'] + '" alt=""></div>');
+                            } else {
+                                $("#comment-block-" + i + "").append('<div class="comment-avatar" id="comment-avatar-' + i + '"><img src="/uploads/avatar/common-avatar.png" alt=""></div>');
+                            }
+                            let commentContent = '<div class="comment-content" id="#comment-content-container-' + i + '">' +
+                                '<p>' + comment['content'] + '</p>' +
+                                '</div>';
+                            $("#comment-avatar-" + i + "").after(commentContent);
+                            /* if connected user is same as comment's author */
+
+                            if (currentUserEmail.replace(/"/g, "") === comment['user']['email']) {
+                                let link = '<a id="remove-link-' + i + '" ' +
+                                    'onclick="return confirm(\'Are you sure you want to delete your comment?\');" ' +
+                                    'href="/comment/' + comment['id'] + '/remove">' +
+                                    '<i class="fas fa-trash-alt"></i></a>';
+                                $("#comment-avatar-" + i + "").next().append(link)
+                            }
+                        })
+                        $('#loader-btn').remove();
+                    }
+                })
+            });
+        });
+    </script>
 {% endblock %}

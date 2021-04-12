@@ -2,7 +2,8 @@ body {
   background-color: #f8f9fa !important;
 }
 
-html, body {
+html,
+body {
   height: 100%;
 }
 
@@ -456,9 +457,11 @@ form[name="comment"] > .form-group {
   #navbarSupportedContent {
     max-width: none;
   }
+
   .home-banner {
     height: 100%;
   }
+
   .home-banner-text {
     padding: 2em 0 2em 0;
   }
@@ -472,12 +475,15 @@ form[name="comment"] > .form-group {
   .body-container {
     padding-bottom: 5em;
   }
+
   .main-navbar {
     display: none;
   }
+
   #tricksBtn, #topBtn {
     bottom: 90px;
   }
+
   .mobile-nav {
     display: flex;
   }
@@ -548,20 +554,25 @@ form[name="comment"] > .form-group {
   .comments-container {
     padding-bottom: 1em;
   }
+
   form[name="comment"] {
     display: block;
   }
+
   form[name="comment"] > .form-group {
     width: 100%;
   }
+
   #comment-button {
     width: 70%;
     display: block;
     margin: 1em auto;
   }
+
   .user-card {
     width: 95%;
   }
+
   .footer {
     justify-content: center;
   }

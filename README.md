@@ -13,7 +13,7 @@ Création d'un site collaboratif de partage de figures de snowboard via le frame
 ```
 
 2. Configurez vos variables d'environnement tel que la connexion à la base de données ou votre serveur SMTP ou adresse
-   mail dans le fichier `.env.local` qui devra être créé à la racine du projet en réalisant une copie du fichier `.env`.
+   mail dans le fichier `.env.local` qui devra être créé à la racine du projet en réalisant une copie du fichier `.env` :
 
 ```
 cp .env .env.local
@@ -44,9 +44,9 @@ cp .env .env.local
 php bin/console doctrine:fixtures:load
 ```
 
-7. (Optionnel) Lancez le serveur Symfony pour tester le projet localement
+7. (Optionnel) Lancez le serveur Symfony pour tester le projet localement :
    ```
    symfony server:start
    ```
 
-8. Félicitations 🎉 le projet est installé correctement, vous pouvez désormais commencer à l'utiliser à votre guise !
+8. Félicitations 🎉 le projet est installé correctement, vous pouvez désormais commencer à l'utiliser à votre guise ! 👨‍💻

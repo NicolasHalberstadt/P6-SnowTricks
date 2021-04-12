@@ -132,12 +132,15 @@ class TrickController extends AbstractController
             );
         }
         $comments = $this->commentRepository->getComments($trick->getId());
+        $commentsCount = $this->commentRepository->countComments($trick->getId());
+        
         return $this->render(
             'trick/show.html.twig',
             [
                 'trick' => $trick,
                 'commentForm' => $commentForm->createView(),
                 'comments' => $comments,
+                'commentsCount' => $commentsCount,
             ]
         );
     }
@@ -158,8 +161,8 @@ class TrickController extends AbstractController
         
         if ($form->isSubmitted() && $form->isValid()) {
             //slug trick's name for url
-            $trick->setName(ucfirst(strtolower($form->get('name')->getData())));
-            $trick->setSlug($this->slugger->slug(strtolower($trick->getName())));
+            $trick->setName(ucfirst(mb_strtolower($form->get('name')->getData(), 'UTF-8')));
+            $trick->setSlug($this->slugger->slug(mb_strtolower($trick->getName(), 'UTF-8')));
             $trick->setCreatedAt(new \DateTime());
             $trick->setUser($user);
             // get images from $form and uploads them into their trick's directory
@@ -208,7 +211,7 @@ class TrickController extends AbstractController
             if ($form->get('name')->getData() !== $oldTrickName) {
                 $fs = new Filesystem();
                 $oldDir = $this->getParameter('tricks_directory').'/'.$trick->getSlug();
-                $trick->setSlug(strtolower($this->slugger->slug($trick->getName())));
+                $trick->setSlug($this->slugger->slug(mb_strtolower($trick->getName(), 'UTF-8')));
                 if ($fs->exists($oldDir)) {
                     $newDir = $this->getParameter('tricks_directory').'/'.$trick->getSlug();
                     $fs->rename($oldDir, $newDir);
@@ -232,7 +235,7 @@ class TrickController extends AbstractController
                     }
                     $image->setIsMain(true);
                 }
-            } else {
+            } elseif (!$trick->getImages()) {
                 $image = $this->trickRepository->find($trick->getId())->getImages()->first();
                 $image->setIsMain(true);
             }
@@ -241,7 +244,7 @@ class TrickController extends AbstractController
             if ($videosUrl) {
                 $this->addVideos($videosUrl, $trick);
             }
-            $trick->setName(ucfirst(strtolower($form->get('name')->getData())));
+            $trick->setName(ucfirst(mb_strtolower($form->get('name')->getData(), 'UTF-8')));
             $this->em->persist($trick);
             $this->em->flush();
             $this->addFlash('success', 'The trick has been successfully updated');

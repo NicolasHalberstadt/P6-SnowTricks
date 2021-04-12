@@ -37,7 +37,7 @@ $(function () {
                     imageOptions.append(radioButton);
                     img.after(imageOptions);
 
-                }
+                };
                 reader.readAsDataURL(input.files[i]);
             }
         }

@@ -1,8 +1,3 @@
-window.onload = function () {
-    handleDisplayToTricksBtn();
-    handleDisplayGoToTopBtn();
-};
-
 let handleDisplayToTricksBtn = function () {
     window.addEventListener("scroll", function () {
         let currentPos = (window.pageYOffset || document.documentElement.scrollTop);
@@ -13,7 +8,7 @@ let handleDisplayToTricksBtn = function () {
             btn.hide();
         }
     });
-}
+};
 
 let handleDisplayGoToTopBtn = function () {
     let btn = $("#topBtn");
@@ -26,4 +21,9 @@ let handleDisplayGoToTopBtn = function () {
             btn.hide();
         }
     });
-}
+};
+
+window.onload = function () {
+    handleDisplayToTricksBtn();
+    handleDisplayGoToTopBtn();
+};

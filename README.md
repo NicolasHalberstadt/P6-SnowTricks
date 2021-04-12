@@ -43,6 +43,9 @@ cp .env .env.local
 ```
 php bin/console doctrine:fixtures:load
 ```
+6bis. Connectez vous avec le compte utilisateur de démo :  
+    - *Email* : snowtricks@example.com  
+    - *Mot de passe* : SnowTricks123!*  
 
 7. (Optionnel) Lancez le serveur Symfony pour tester le projet localement :
    ```

@@ -117,13 +117,15 @@
         </button>
     </div>
 </div>
+<div class="btn-options-group">
+    <button type="button" onclick="history.back(-1)" class="btn btn-outline-warning">Cancel</button>
+    {% if trick is defined %}
+        <a onclick="return confirm('Are you sure you want to delete this trick?');" class="btn btn-outline-danger"
+           href="{{ path('trick_delete', {'slug' : trick.slug }) }}">Remove trick</a>
+    {% endif %}
+    <button type="submit" class="btn btn-success">Save</button>
+</div>
 
-<button type="button" onclick="history.back(-1)" class="btn btn-outline-warning">Cancel</button>
-{% if trick is defined %}
-    <a onclick="return confirm('Are you sure you want to delete this trick?');" class="btn btn-outline-danger"
-       href="{{ path('trick_delete', {'slug' : trick.slug }) }}">Remove trick</a>
-{% endif %}
-<button type="submit" class="btn btn-success">Save</button>
 {{ form_end(form) }}
 
 {% block javascripts %}

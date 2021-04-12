@@ -1,12 +1,13 @@
 body {
-  background-color: #f8f9fa !important;
+  background-color: #F8F9FA !important;
 }
+
 html, body {
   height: 100%;
 }
 
 a {
-  color: rgba(0, 0, 0, .55);
+  color: rgba(0, 0, 0, 0.55);
   text-decoration: none;
 }
 
@@ -15,18 +16,36 @@ a:hover {
   text-decoration: underline;
 }
 
-
 #navbarSupportedContent {
   max-width: 26%;
 }
 
-.flash-container {
+.mobile-nav {
+  display: none;
+  flex-direction: row;
+  justify-content: space-between;
+  align-content: center;
+  position: fixed;
+  z-index: 99;
+  list-style: none;
+  bottom: 0;
+  width: 100%;
+  border-top: 1px solid black;
+  background-color: #8A8A8A;
+  margin: 0;
+  padding-left: 0;
+  height: 10%;
+  font-size: 2em;
+}
+
+
+.alert {
   margin-top: 1em;
 }
 
 form {
   border-radius: 15px;
-  background-color: #fff;
+  background-color: #FFF;
   margin: 4em auto;
   padding: 2em;
   width: 60%;
@@ -36,12 +55,13 @@ form {
   text-align: center;
   margin: 1em 0;
 }
+
 .main-navbar {
-  border-bottom: 1px solid #c4c4c4;
+  border-bottom: 1px solid #C4C4C4;
 }
 
 .user-card {
-  background-color: #fff;
+  background-color: #FFF;
   margin: 4em auto;
   padding: 2em;
   width: 60%;
@@ -61,11 +81,14 @@ form {
 
 .home-banner {
   background-image: url("../uploads/home-background.jpg");
+  background-position: center;
+  background-repeat: no-repeat;
   height: 100%;
   display: flex;
   justify-content: center;
   align-items: center;
 }
+
 .home-banner-text {
   color: white;
   font-size: 15em;
@@ -73,6 +96,11 @@ form {
 
 #tricks-container {
   margin-top: 2em;
+}
+
+#tricks-container h3 {
+  width: 100%;
+  margin: 2em auto;
 }
 
 .card-img-container {
@@ -98,6 +126,10 @@ form {
   width: 80%;
 }
 
+.trick-card-edit {
+  display: flex;
+}
+
 .fa-pen {
   margin-right: 5px;
 }
@@ -111,7 +143,7 @@ form {
 
 form[name="trick_form"] {
   border-radius: 15px;
-  background-color: #fff;
+  background-color: #FFF;
   margin: 4em auto;
   padding: 2em;
   width: 60%;
@@ -129,6 +161,7 @@ form[name="trick_form"] {
   flex-direction: row;
   margin-top: 1em;
 }
+
 .images-container > .custom-file {
   margin: 1em;
 }
@@ -138,7 +171,7 @@ form[name="trick_form"] {
 }
 
 .image-input {
-  border: 1px solid #ced4da;
+  border: 1px solid #CED4DA;
   border-radius: .25rem;
   max-width: 16%;
   padding: 1em;
@@ -176,7 +209,7 @@ form[name="trick_form"] {
   align-items: center;
   margin-right: 10px;
   padding: 0 10px;
-  background-color: #fff;
+  background-color: #FFF;
   height: 50px;
   border-top-right-radius: 15px;
   border-bottom-right-radius: 15px;
@@ -198,13 +231,18 @@ form[name="trick_form"] {
   margin-top: 1em;
 }
 
+.btn-options-group button,
+.btn-options-group a {
+  margin-bottom: 0.5em;
+}
+
 /* trick details */
 .trick-container {
   margin: 4em auto;
   padding: 2em;
   width: 60%;
   border-radius: 15px;
-  background-color: #fff;
+  background-color: #FFF;
   box-shadow: 0 0 188px 78px rgba(227, 227, 227, 0.75);
   -webkit-box-shadow: 0 0 188px 78px rgba(227, 227, 227, 0.75);
   -moz-box-shadow: 0 0 188px 78px rgba(227, 227, 227, 0.75);
@@ -217,7 +255,7 @@ form[name="trick_form"] {
   padding: 0.5em;
   margin: 2em;
   border: solid 1px lightgrey;
-  background-color: #aeaeae;
+  background-color: #AEAEAE;
 }
 
 .trick-name {
@@ -227,9 +265,9 @@ form[name="trick_form"] {
   transform: translate(-50%, -50%);
   font-size: 3em;
   z-index: 2;
-  background-color: #aeaeae;
+  background-color: #AEAEAE;
   color: white;
-  padding: .5rem 1rem;
+  padding: 0.5rem 1rem;
   border-radius: 10px;
 }
 
@@ -241,10 +279,15 @@ form[name="trick_form"] {
   align-items: center;
 }
 
-.carousel-item img {
+.carousel-item img,
+.carousel-item .video {
   width: 100%;
   height: 401px;
   object-fit: contain;
+}
+
+.trick-see-medias {
+  display: none;
 }
 
 .carousel-indicators {
@@ -283,11 +326,13 @@ form[name="trick_form"] {
   margin: 2em 0 0;
   padding: 0 2em;
 }
+
 .trick-info {
   text-align: center;
   padding: 2em 0;
   margin: auto;
 }
+
 .trick-info p {
   cursor: default;
   padding: 1em;
@@ -312,6 +357,7 @@ form[name="trick_form"] {
 .comment-login {
   text-align: center;
 }
+
 .comment-login-link {
   text-decoration: underline;
 }
@@ -359,12 +405,13 @@ form[name="comment"] > .form-group {
 }
 
 .comment-content .fa-trash-alt {
-  color: #cf0303;
+  color: #CF0303;
 }
 
 /* scroll btn */
 #tricksBtn,
 #topBtn {
+  background-color: #8A8A8A;
   display: none;
   position: fixed;
   bottom: 20px;
@@ -394,4 +441,145 @@ form[name="comment"] > .form-group {
 
 .footer > p {
   margin-left: 2em;
+}
+
+/* ########################### MEDIA QUERIES ########################### */
+
+/* from 0 to 576px */
+@media (max-width: 576px) {
+
+  /* homepage */
+  .home-banner-text {
+    font-size: 8em;
+  }
+
+  /* add trick */
+  .image-input {
+    max-width: 30%;
+  }
+
+  .carousel-item {
+    min-width: 100%;
+  }
+
+  .carousel-indicators [data-bs-target] {
+    width: 30px;
+    height: 30px;
+  }
+
+  /* trick details */
+  .trick-container {
+    width: 100%;
+    padding: 0;
+  }
+
+  .trick-see-medias {
+    display: block;
+    margin: 15px auto 1em auto;
+  }
+
+  .carousel-indicators {
+    display: none;
+  }
+
+  .carousel {
+    text-align: center;
+  }
+
+  .carousel-inner {
+    overflow-wrap: break-word;
+  }
+
+  .trick-name {
+    white-space: break-spaces;
+    width: 95%;
+    font-size: 3em;
+    background-color: rgba(173, 173, 173, 0.54);
+  }
+
+  .trick-info {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .comments-container {
+    padding-bottom: 1em;
+  }
+  form[name="comment"] {
+    display: block;
+  }
+  form[name="comment"] > .form-group {
+    width: 100%;
+  }
+  #comment-button {
+    width: 70%;
+    display: block;
+    margin: 1em auto;
+  }
+  .user-card {
+    width: 95%;
+  }
+  .footer {
+    justify-content: center;
+  }
+}
+
+/* from 0px to ... */
+@media (min-width: 0px) {
+  form {
+    width: 100% !important;
+    padding: 1em;
+  }
+
+  #navbarSupportedContent {
+    max-width: none;
+  }
+  .home-banner {
+    height: 100%;
+  }
+  .home-banner-text {
+    padding: 2em 0 2em 0;
+  }
+
+  .image-input {
+    max-width: 50%;
+  }
+}
+
+@media (min-width: 768px) {
+  form {
+    width: 80% !important;
+  }
+}
+
+@media (min-width: 992px) {
+  #navbarSupportedContent {
+    max-width: 35%;
+  }
+}
+
+@media (min-width: 1200px) {
+  #navbarSupportedContent {
+    max-width: 25%;
+  }
+}
+
+@media (min-width: 0px ) and (max-width: 992px) {
+  .body-container {
+    padding-bottom: 5em;
+  }
+  .main-navbar {
+    display: none;
+  }
+  #tricksBtn, #topBtn {
+    bottom: 90px;
+  }
+  .mobile-nav {
+    display: flex;
+  }
+
+  .footer {
+    display: none;
+  }
 }

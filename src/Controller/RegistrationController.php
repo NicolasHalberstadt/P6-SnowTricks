@@ -47,7 +47,7 @@ class RegistrationController extends AbstractController
             if ($avatar) {
                 $originalFileName = pathinfo($avatar->getClientOriginalName(), PATHINFO_FILENAME);
                 $safeFilename = $slugger->slug($originalFileName);
-                $newFileName = $safeFilename . '-' . uniqid() . '.' . $avatar->guessExtension();
+                $newFileName = $safeFilename.'-'.uniqid().'.'.$avatar->guessExtension();
                 try {
                     $avatar->move(
                         $this->getParameter('avatar_directory'),
@@ -67,20 +67,29 @@ class RegistrationController extends AbstractController
             $entityManager->flush();
             
             // generate a signed url and email it to the user
-            $this->emailVerifier->sendEmailConfirmation('app_verify_email', $user,
+            $this->emailVerifier->sendEmailConfirmation(
+                'app_verify_email',
+                $user,
                 (new TemplatedEmail())
                     ->from(new Address('nicolash.dev@gmail.com', 'Snow Tricks'))
                     ->to($user->getEmail())
                     ->subject('Please Confirm your Email')
                     ->htmlTemplate('registration/confirmation_email.html.twig')
             );
-            $this->addFlash('success',
-                'Please, validate your email by clicking the link into the mail we just sent you');
+            $this->addFlash(
+                'success',
+                'Please, validate your email by clicking the link into the mail we just sent you'
+            );
+            
             return $this->redirectToRoute('home');
         }
-        return $this->render('registration/register.html.twig', [
-            'registrationForm' => $form->createView()
-        ]);
+        
+        return $this->render(
+            'registration/register.html.twig',
+            [
+                'registrationForm' => $form->createView(),
+            ]
+        );
     }
     
     /**
@@ -92,25 +101,27 @@ class RegistrationController extends AbstractController
     public function verifyUserEmail(Request $request, UserRepository $userRepository): Response
     {
         $id = $request->get('id');
-
+        
         if (null === $id) {
             return $this->redirectToRoute('app_register');
         }
-
+        
         $user = $userRepository->find($id);
-
+        
         if (null === $user) {
             return $this->redirectToRoute('app_register');
         }
-
+        
         // validate email confirmation link, sets User::isVerified=true and persists
         try {
             $this->emailVerifier->handleEmailConfirmation($request, $user);
         } catch (VerifyEmailExceptionInterface $exception) {
             $this->addFlash('verify_email_error', $exception->getReason());
+            
             return $this->redirectToRoute('app_register');
         }
         $this->addFlash('success', 'Your email address has been verified.');
+        
         return $this->redirectToRoute('app_login');
     }
 }

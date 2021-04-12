@@ -1,5 +1,5 @@
 {% extends 'base.html.twig' %}
-{% block title %}{{trick.name}}{% endblock %}
+{% block title %}{{ trick.name }}{% endblock %}
 {% block body %}
     <div class="trick-container" data-user-email="{{ app.user ? app.user.email|json_encode|e('html_attr') }}">
         <div class="row">
@@ -68,6 +68,7 @@
                         {% set i = i+1 %}
                     {% endfor %}
                 </div>
+                <button class="btn btn-outline-dark trick-see-medias" onclick=showMedia()>See medias</button>
             </div>
         </div>
         <div class="trick-content">
@@ -105,27 +106,29 @@
                     <h4>No comments yet</h4>
                 </div>
             {% endif %}
-            {% for comment in comments %}
-                <div class="comment">
-                    <div class="comment-avatar">
-                        {% if comment.user.avatar %}
-                            <img src="/uploads/avatar/{{ comment.user.avatar }}" alt="">
-                        {% else %}
-                            <img src="/uploads/avatar/common-avatar.png" alt="">
-                        {% endif %}
+            <div class="comments-list-container">
+                {% for comment in comments %}
+                    <div class="comment">
+                        <div class="comment-avatar">
+                            {% if comment.user.avatar %}
+                                <img src="/uploads/avatar/{{ comment.user.avatar }}" alt="">
+                            {% else %}
+                                <img src="/uploads/avatar/common-avatar.png" alt="">
+                            {% endif %}
+                        </div>
+                        <div class="comment-content">
+                            <p>{{ comment.content }}</p>
+                            {% if comment.user is same as app.user %}
+                                <a onclick="return confirm('Are you sure you want to delete your comment?');"
+                                   href="{{ path('comment_delete', {'id':comment.id}) }}">
+                                    <i class="fas fa-trash-alt"></i>
+                                </a>
+                            {% endif %}
+                        </div>
                     </div>
-                    <div class="comment-content">
-                        <p>{{ comment.content }}</p>
-                        {% if comment.user is same as app.user %}
-                            <a onclick="return confirm('Are you sure you want to delete your comment?');"
-                               href="{{ path('comment_delete', {'id':comment.id}) }}">
-                                <i class="fas fa-trash-alt"></i>
-                            </a>
-                        {% endif %}
-                    </div>
-                </div>
-            {% endfor %}
-            {% if comments|length is same as(3) %}
+                {% endfor %}
+            </div>
+            {% if commentsCount > 3 %}
                 <button type="button" id="loader-btn" class="loader-btn btn btn-secondary">
                     <i class="fas fa-spinner fa-spin"></i> Load more
                 </button>
@@ -162,44 +165,65 @@
     {# ajax call load more comments #}
     <script>
         jQuery().ready(function () {
+            {% if trick.comments|length > 0 %}
             let moreBtn = $('#loader-btn');
             let trickContainer = $('.trick-container');
-            let lastId = $('.comments-container:last-child').attr("id");
+            let commentLength = 3;
+            let index = 0;
             moreBtn.on('click', function () {
                 $.ajax({
                     type: "GET",
-                    url: "{{ path('comments_load_more', {lastId: comments|last.id, trickId: trick.id }) }}",
+                    url: `/comments/get/{{ trick.id }}/${commentLength}`,
                     cache: false,
                     success: function (comments) {
                         let currentUserEmail = trickContainer.data('userEmail');
                         $.each(comments, function (i, comment) {
                             /* Block for each comment */
-                            let commentBlock = '<div class="comment" id="comment-block-' + i + '"></div>';
+                            let commentBlock = `<div class="comment" id="comment-block-${index}"></div>`;
                             moreBtn.before(commentBlock);
                             /* If user connected => avatar displayed */
                             if (comment['user']['avatar']) {
-                                $("#comment-block-" + i + "").append('<div class="comment-avatar" id="comment-avatar-' + i + '"><img src="/uploads/avatar/' + comment['user']['avatar'] + '" alt=""></div>');
+                                $(`#comment-block-${index}`).append(`<div class="comment-avatar" id="comment-avatar-${index}"><img src="/uploads/avatar/${comment['user']['avatar']}" alt=""></div>`);
                             } else {
-                                $("#comment-block-" + i + "").append('<div class="comment-avatar" id="comment-avatar-' + i + '"><img src="/uploads/avatar/common-avatar.png" alt=""></div>');
+                                $(`#comment-block-${index}`).append(`<div class="comment-avatar" id="comment-avatar-${index}"><img src="/uploads/avatar/common-avatar.png" alt=""></div>`);
                             }
-                            let commentContent = '<div class="comment-content" id="#comment-content-container-' + i + '">' +
-                                '<p>' + comment['content'] + '</p>' +
-                                '</div>';
-                            $("#comment-avatar-" + i + "").after(commentContent);
+                            let commentContent = `<div class="comment-content" id="#comment-content-container- ${index}"><p>${comment['content']}</p></div>`
+                            $("#comment-avatar-" + index + "").after(commentContent);
                             /* if connected user is same as comment's author */
-
                             if (currentUserEmail.replace(/"/g, "") === comment['user']['email']) {
-                                let link = '<a id="remove-link-' + i + '" ' +
-                                    'onclick="return confirm(\'Are you sure you want to delete your comment?\');" ' +
-                                    'href="/comment/' + comment['id'] + '/remove">' +
-                                    '<i class="fas fa-trash-alt"></i></a>';
-                                $("#comment-avatar-" + i + "").next().append(link)
+                                let link = `<a id="remove-link-${index}"
+                                    onclick="return confirm(\'Are you sure you want to delete your comment?\');"
+                                    href="/comment/${comment['id']}/remove">
+                                    <i class="fas fa-trash-alt"></i></a>`;
+                                $(`#comment-avatar-${index}`).next().append(link)
+                                $(`#comment-content-container-${index}`).after(link)
                             }
+                            index = index + 1;
                         })
-                        $('#loader-btn').remove();
+                        commentLength = $(".comment").length;
+                        if (commentLength === {{ commentsCount }}) {
+                            moreBtn.remove();
+                        }
                     }
                 })
             });
+            {% endif %}
         });
+    </script>
+    <script>
+
+    </script>
+    <script>
+        let showMedia = function () {
+            let previews = $('.carousel-indicators');
+            let btn = $('.trick-see-medias');
+            if (previews.is(':visible')) {
+                btn.text('See medias');
+                previews.hide();
+            } else {
+                previews.css('display', 'flex');
+                btn.text('Hide medias');
+            }
+        }
     </script>
 {% endblock %}

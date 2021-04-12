@@ -42,7 +42,7 @@
                             <a href="{{ path('trick_show', {slug: trick.slug}) }}">{{ trick.name }}</a>
                         </h5>
                         {% if user %}
-                            <div>
+                            <div class="trick-card-edit">
                                 <a href="{{ path('trick_edit', {slug : trick.slug}) }}">
                                     <i class="fas fa-pen"></i>
                                 </a>
@@ -72,6 +72,7 @@
 {% block javascripts %}
     <script src="{{ asset("/js/page-move-btn.js") }}" crossorigin="anonymous"></script>
     <script>
+        {% if tricks is not empty %}
         jQuery().ready(function () {
             let moreBtn = $('#loader-btn');
             moreBtn.on('click', function () {
@@ -118,6 +119,7 @@
                 })
             });
         });
+        {% endif %}
 
         $('a[href*="#"]').not('[href="#"]').not('[href="#0"]').click(function (t) {
             if (location.pathname.replace(/^\//, "") === this.pathname.replace(/^\//, "") && location.hostname === this.hostname) {

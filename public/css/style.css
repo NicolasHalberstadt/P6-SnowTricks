@@ -270,6 +270,7 @@ form[name="trick_form"] {
   padding: 0.5rem 1rem;
   border-radius: 10px;
 }
+
 /* --carousel */
 
 .carousel-item {
@@ -319,7 +320,6 @@ form[name="trick_form"] {
   max-height: 80px;
   object-fit: cover;
 }
-
 
 .trick-content {
   margin: 2em 0 0;

@@ -2,9 +2,14 @@
 {% block title %}Profile{% endblock %}
 {% block body %}
     <div class="user-card">
-        <img class="user-card-avatar" src="{{ asset('uploads/avatar/'~ user.avatar) }}" alt="">
+        {% if user.avatar is not null %}
+            <img class="user-card-avatar" src="{{ asset('uploads/avatar/'~ user.avatar) }}" alt="">
+        {% else %}
+            <img class="user-card-avatar" src="{{ asset('uploads/avatar/common-avatar.png') }}" alt="">
+        {% endif %}
+
         <h1 class="user-card-name">Welcome {{ user.username }}</h1>
-        <p>Member of SnowTricks since {{ user.createdAt|date("jS F Y") }}.</p>
+        <p>Member of SnowTricks since the {{ user.createdAt|date("jS F Y") }}.</p>
         <a class="btn btn-outline-dark" href="profile/update">Update my profile</a>
     </div>
 {% endblock %}

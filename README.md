@@ -38,13 +38,13 @@ cp .env .env.local
     php bin/console doctrine:migrations:migrate
 ```
 
-6. (Optionnel) Installer les 'fixtures' pour avoir un premier jeu de données :
+6. (Optionnel) Installez les 'fixtures' pour avoir un premier jeu de données :
 
 ```
 php bin/console doctrine:fixtures:load
 ```
 
-7. (Optionnel) Lancer le serveur Symfony pour tester le projet localement
+7. (Optionnel) Lancez le serveur Symfony pour tester le projet localement
    ```
    symfony server:start
    ```

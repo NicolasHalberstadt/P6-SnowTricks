@@ -35,20 +35,33 @@ class CommentRepository extends ServiceEntityRepository
     }
     
     /**
-     * @param int $lastId
+     * @param int $offset
      * @param int $trickId
      * @return array
      */
-    public function loadMoreComments(int $lastId, int $trickId): array
+    public function loadMoreComments(int $offset, int $trickId): array
     {
         return $this->createQueryBuilder('c')
-            ->andWhere('c.id < :lastId')
             ->andWhere('c.trick = :trickId')
-            ->setParameter('lastId', $lastId)
             ->setParameter('trickId', $trickId)
             ->orderBy('c.id', 'DESC')
             ->setMaxResults(3)
+            ->setFirstResult($offset)
             ->getQuery()
             ->getResult();
+    }
+    
+    /**
+     * @param int $trickId
+     * @return int
+     */
+    public function countComments(int $trickId): int
+    {
+        return $this->createQueryBuilder('c')
+            ->select('count(c.id)')
+            ->andWhere('c.trick = :trickId')
+            ->setParameter('trickId', $trickId)
+            ->getQuery()
+            ->getSingleScalarResult();
     }
 }

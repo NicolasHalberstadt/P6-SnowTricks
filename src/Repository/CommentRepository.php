@@ -4,6 +4,8 @@ namespace App\Repository;
 
 use App\Entity\Comment;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\ORM\NonUniqueResultException;
+use Doctrine\ORM\NoResultException;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
@@ -29,7 +31,7 @@ class CommentRepository extends ServiceEntityRepository
             ->orderBy('c.id', 'DESC')
             ->andWhere('c.trick = :trickId')
             ->setParameter('trickId', $trickId)
-            ->setMaxResults(3)
+            ->setMaxResults(10)
             ->getQuery()
             ->getResult();
     }
@@ -45,7 +47,7 @@ class CommentRepository extends ServiceEntityRepository
             ->andWhere('c.trick = :trickId')
             ->setParameter('trickId', $trickId)
             ->orderBy('c.id', 'DESC')
-            ->setMaxResults(3)
+            ->setMaxResults(10)
             ->setFirstResult($offset)
             ->getQuery()
             ->getResult();
@@ -54,6 +56,8 @@ class CommentRepository extends ServiceEntityRepository
     /**
      * @param int $trickId
      * @return int
+     * @throws NoResultException
+     * @throws NonUniqueResultException
      */
     public function countComments(int $trickId): int
     {

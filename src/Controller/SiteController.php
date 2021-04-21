@@ -24,9 +24,13 @@ class SiteController extends AbstractController
     {
         $user = $this->getUser();
         $tricks = $trickRepository->findHomepageTricks();
-        return $this->render('home.html.twig', [
-            'user' => $user,
-            'tricks' => $tricks
-        ]);
+        
+        return $this->render(
+            'home.html.twig',
+            [
+                'user' => $user,
+                'tricks' => $tricks,
+            ]
+        );
     }
 }

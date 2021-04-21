@@ -12,6 +12,8 @@ use App\Repository\CommentRepository;
 use App\Repository\ImageRepository;
 use App\Repository\TrickRepository;
 use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\NonUniqueResultException;
+use Doctrine\ORM\NoResultException;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -75,18 +77,6 @@ class TrickController extends AbstractController
     public function loadTricks(int $lastId, SerializerInterface $serializer): Response
     {
         $tricks = $this->trickRepository->loadMoreTricks($lastId);
-        /* $encoder = new JsonEncoder();
-         $defaultContext = [
-             AbstractNormalizer::CIRCULAR_REFERENCE_HANDLER => function ($object, $format, $context) {
-                 return $object->getName();
-             },
-         ];
-         $normalizer = new ObjectNormalizer(null, null, null, null, null, null, $defaultContext);
-
-         $serializer = new Serializer([$normalizer], [$encoder]);
-         $serializedTricks = $serializer->normalize($tricks, null, array('enable_max_depth' => true));
-         dump($serializedTricks);
-         exit;*/
         $response = new Response();
         $response->setContent(
             $serializer->serialize(
@@ -105,6 +95,8 @@ class TrickController extends AbstractController
      * @param string $slug
      * @param Request $request
      * @return Response
+     * @throws NoResultException
+     * @throws NonUniqueResultException
      */
     public function showTrick(string $slug, Request $request): Response
     {
@@ -186,7 +178,7 @@ class TrickController extends AbstractController
             
             $this->addFlash('success', 'The trick has been successfully added');
             
-            return $this->redirectToRoute('trick_show', ['slug' => $trick->getSlug()]);
+            return $this->redirectToRoute('home');
         }
         
         return $this->render('trick/add.html.twig', ['form' => $form->createView()]);
@@ -219,27 +211,14 @@ class TrickController extends AbstractController
             }
             $images = $form->get('images')->getData();
             if ($images) {
+                /* if image is added through the input */
                 $fs = new Filesystem();
                 $dir = $this->getParameter('tricks_directory').'/'.$trick->getSlug();
                 $fs->mkdir($dir);
                 foreach ($images as $key => $image) {
                     $this->addImage($image, $key, $trick, $dir);
                 }
-            } elseif (isset($_POST['mainPictureRadio'])) {
-                // in this loop if no image is added
-                $radioId = filter_var($_POST['mainPictureRadio'], FILTER_SANITIZE_NUMBER_INT);
-                if ($radioId !== $this->imageRepository->findMainPic($trick->getId())) {
-                    $image = $this->imageRepository->find($radioId);
-                    if (isset($this->imageRepository->findMainPic($trick->getId())[0])) {
-                        $this->imageRepository->findMainPic($trick->getId())[0]->setIsMain(false);
-                    }
-                    $image->setIsMain(true);
-                }
-            } elseif (!$trick->getImages()) {
-                $image = $this->trickRepository->find($trick->getId())->getImages()->first();
-                $image->setIsMain(true);
             }
-            
             $videosUrl = $form->get('videos')->getData();
             if ($videosUrl) {
                 $this->addVideos($videosUrl, $trick);
@@ -266,8 +245,9 @@ class TrickController extends AbstractController
      * @param string $slug
      * @return RedirectResponse
      */
-    public function deleteTrick(string $slug): RedirectResponse
-    {
+    public function deleteTrick(
+        string $slug
+    ): RedirectResponse {
         $this->denyAccessUnlessGranted('ROLE_USER');
         $trick = $this->trickRepository->findOneBy(['slug' => $slug]);
         if (!$trick) {
@@ -287,18 +267,9 @@ class TrickController extends AbstractController
         return $this->redirectToRoute('home');
     }
     
-    /**
-     * @Route("/ajax/removeImages", name="ajax_remove", methods="{POST}")
-     * @param Request $request
-     * @return JsonResponse
-     */
-    public function ajaxRemoveImage(Request $request): JsonResponse
-    {
-        return new JsonResponse($request->request->get('request'));
-    }
-    
-    private function convertYoutube($string)
-    {
+    private function convertYoutube(
+        $string
+    ) {
         return preg_replace(
             "/\s*[a-zA-Z\/\/:\.]*youtu(be.com\/watch\?v=|.be\/)([a-zA-Z0-9\-_]+)([a-zA-Z0-9\/\*\-\_\?\&\;\%\=\.]*)/i",
             '<iframe frameborder="0" src="//www.youtube.com/embed/$2" allow="accelerometer;autoplay;clipboard-write-media;gyroscope;picture-in-picture" allowfullscreen></iframe>',
@@ -306,8 +277,12 @@ class TrickController extends AbstractController
         );
     }
     
-    private function addImage($image, $key, Trick $trick, $dir)
-    {
+    private function addImage(
+        $image,
+        $key,
+        Trick $trick,
+        $dir
+    ) {
         $originalFileName = pathinfo($image->getClientOriginalName(), PATHINFO_FILENAME);
         $safeFilename = $this->slugger->slug($originalFileName);
         $newFileName = $safeFilename.'-'.uniqid().'.'.$image->guessExtension();
@@ -318,12 +293,13 @@ class TrickController extends AbstractController
         $image = new Image();
         $image->setName($newFileName);
         $image->setCreatedAt(new \DateTime());
-        if ($key == $_POST['mainPictureRadio']) {
-            if (isset($this->imageRepository->findMainPic($trick->getId())[0])) {
+        if (!isset($_POST['mainPictureRadio'])) {
+            $_POST['mainPictureRadio'] = 0;
+        }
+        if ($key === $_POST['mainPictureRadio']) {
+            if (defined($trick->getId())) {
                 $actualMainPic = $this->imageRepository->findMainPic($trick->getId())[0];
-                if ($actualMainPic->getName() !== $image->getName()) {
-                    $actualMainPic->setIsMain(false);
-                }
+                $actualMainPic->setIsMain(false);
             }
             $image->setIsMain(true);
         }
@@ -332,8 +308,10 @@ class TrickController extends AbstractController
         $this->em->persist($image);
     }
     
-    private function addVideos(array $videos, Trick $trick)
-    {
+    private function addVideos(
+        array $videos,
+        Trick $trick
+    ) {
         if ($videos) {
             foreach ($videos as $video) {
                 if (isset($video)) {

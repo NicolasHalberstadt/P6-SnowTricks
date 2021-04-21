@@ -19,56 +19,89 @@ class UserUpdateType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
-            ->add('firstname', TextType::class, [
-                'constraints' => [
-                    new NotBlank([
-                        'message' => 'Please, enter a firstname'
-                    ]),
-                    new Length([
-                        'min' => 2,
-                        'minMessage' => 'Please, enter at least {{ limit }} characters'
-                    ])
+            ->add(
+                'firstname',
+                TextType::class,
+                [
+                    'constraints' => [
+                        new NotBlank(
+                            [
+                                'message' => 'Please, enter a firstname',
+                            ]
+                        ),
+                        new Length(
+                            [
+                                'min' => 2,
+                                'minMessage' => 'Please, enter at least {{ limit }} characters',
+                            ]
+                        ),
+                    ],
                 ]
-            ])
-            ->add('lastname', TextType::class, [
-                'constraints' => [
-                    new NotBlank([
-                        'message' => 'Please, enter a lastname'
-                    ]),
-                    new Length([
-                        'min' => 2,
-                        'minMessage' => 'Please, enter at least {{ limit }} characters'
-                    ])
+            )
+            ->add(
+                'lastname',
+                TextType::class,
+                [
+                    'constraints' => [
+                        new NotBlank(
+                            [
+                                'message' => 'Please, enter a lastname',
+                            ]
+                        ),
+                        new Length(
+                            [
+                                'min' => 2,
+                                'minMessage' => 'Please, enter at least {{ limit }} characters',
+                            ]
+                        ),
+                    ],
                 ]
-            ])
+            )
             ->add('email', EmailType::class)
-            ->add('avatar', FileType::class, [
-                'label' => 'Change your avatar',
-                'mapped' => false,
-                'required' => false,
-                'constraints' => [
-                    new File([
-                        'maxSize' => '1024k',
-                        'mimeTypes' => 'image/*',
-                        'mimeTypesMessage' => 'Please choose a valid image'
-                    ])
-                ],
-            ])
-            ->add('plainPassword', PasswordType::class, [
-                'label' => 'Enter your password to save changes',
-                'mapped' => false,
-                'constraints' => [
-                    new NotBlank([
-                        'message' => 'Please enter your password to save changes',
-                    ])
-                ],
-            ]);
+            ->add(
+                'avatar',
+                FileType::class,
+                [
+                    'label' => 'Change your avatar',
+                    'mapped' => false,
+                    'required' => false,
+                    'constraints' => [
+                        new File(
+                            [
+                                'maxSize' => '1024k',
+                                'mimeTypes' => 'image/*',
+                                'mimeTypesMessage' => 'Please choose a valid image',
+                            ]
+                        ),
+                    ],
+                    'attr' => [
+                        'class' => 'form-control',
+                    ],
+                ]
+            )
+            ->add(
+                'plainPassword',
+                PasswordType::class,
+                [
+                    'label' => 'Enter your password to save changes',
+                    'mapped' => false,
+                    'constraints' => [
+                        new NotBlank(
+                            [
+                                'message' => 'Please enter your password to save changes',
+                            ]
+                        ),
+                    ],
+                ]
+            );
     }
     
     public function configureOptions(OptionsResolver $resolver)
     {
-        $resolver->setDefaults([
-            'data_class' => User::class,
-        ]);
+        $resolver->setDefaults(
+            [
+                'data_class' => User::class,
+            ]
+        );
     }
 }
